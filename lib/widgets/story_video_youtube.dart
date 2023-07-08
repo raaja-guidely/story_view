@@ -22,7 +22,7 @@ class VideoLoader {
       onComplete();
     }
     final fileStream = YoutubePlayer.convertUrlToId(url)!;
-
+    print(fileStream);
     this.state = LoadState.success;
     this.videoId = fileStream;
     onComplete();
@@ -66,21 +66,17 @@ class StoryVideoYoutubeState extends State<StoryVideoYoutube> {
     widget.storyController!.pause();
     widget.videoLoader.loadVideo(() {
       if (widget.videoLoader.state == LoadState.success) {
-        this.playerController =
-            YoutubePlayerController(initialVideoId: widget.videoLoader.videoId!)
-              ..addListener(() {
-                setState(() {});
-                this.playerController.play();
-                widget.storyController!.play();
-              });
-        print(playerController.value.isPlaying);
+        this.playerController = YoutubePlayerController(
+            initialVideoId: widget.videoLoader.videoId!);
+        log(this.playerController.value.isPlaying.toString());
+        widget.storyController!.play();
         if (widget.storyController != null) {
           _streamSubscription =
               widget.storyController!.playbackNotifier.listen((playbackState) {
             if (playbackState == PlaybackState.pause) {
-              playerController.pause();
+              this.playerController.pause();
             } else {
-              playerController.play();
+              this.playerController.play();
             }
           });
         }
@@ -97,14 +93,8 @@ class StoryVideoYoutubeState extends State<StoryVideoYoutube> {
   }
 
   Widget getContentView() {
-    if (widget.videoLoader.state == LoadState.success &&
-        playerController.value.isPlaying) {
-      return Center(
-        child: AspectRatio(
-          aspectRatio: 16 / 9,
-          child: YoutubePlayer(controller: playerController),
-        ),
-      );
+    if (widget.videoLoader.state == LoadState.success) {
+      return YoutubePlayer(controller: playerController);
     }
 
     return widget.videoLoader.state == LoadState.loading
@@ -134,12 +124,7 @@ class StoryVideoYoutubeState extends State<StoryVideoYoutube> {
       color: Colors.black,
       height: double.infinity,
       width: double.infinity,
-      child: Center(
-        child: AspectRatio(
-          aspectRatio: 16 / 9,
-          child: YoutubePlayer(controller: playerController),
-        ),
-      ),
+      child: getContentView(),
     );
   }
 
