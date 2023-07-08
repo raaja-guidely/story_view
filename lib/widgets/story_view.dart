@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
+import 'package:story_view/widgets/story_video_youtube.dart';
 
 import '../controller/story_controller.dart';
 import '../utils.dart';
@@ -233,11 +234,17 @@ class StoryItem {
           color: Colors.black,
           child: Stack(
             children: <Widget>[
-              StoryVideo.url(
-                url,
-                controller: controller,
-                requestHeaders: requestHeaders,
-              ),
+              url.contains('https://www.youtube.com')
+                  ? StoryVideoYoutube.url(
+                      url,
+                      controller: controller,
+                      requestHeaders: requestHeaders,
+                    )
+                  : StoryVideo.url(
+                      url,
+                      controller: controller,
+                      requestHeaders: requestHeaders,
+                    ),
               SafeArea(
                 child: Align(
                   alignment: Alignment.bottomCenter,
