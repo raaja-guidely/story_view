@@ -53,7 +53,7 @@ class StoryItem {
   static StoryItem text({
     required String title,
     required Color backgroundColor,
-    required List<ParserType> supportedTypes,
+    required List<ParsedType> supportedTypes,
     Key? key,
     TextStyle? textStyle,
     bool shown = false,

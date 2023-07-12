@@ -267,11 +267,12 @@ packages:
   rich_text_view:
     dependency: "direct main"
     description:
-      name: rich_text_view
-      sha256: b7d8453fa8e0684c35546eee648f38957015d09440be5c4e7d87ae53ae92bf87
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.0"
+      path: "."
+      ref: HEAD
+      resolved-ref: "26333330fde3f03d1168911e98300a42919cd81b"
+      url: "https://github.com/AlejandroRodriguezO/rich_text_view.git"
+    source: git
+    version: "1.1.0-dev-1"
   rxdart:
     dependency: "direct main"
     description:
