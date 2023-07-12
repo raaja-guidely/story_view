@@ -60,6 +60,9 @@ class StoryItem {
     bool roundedTop = false,
     bool roundedBottom = false,
     Duration? duration,
+    void Function(String)? onMentionClicked,
+    void Function(String)? onEmailClicked,
+    void Function(String)? onPhoneClicked,
   }) {
     double contrast = ContrastHelper.contrast([
       backgroundColor.red,
@@ -101,6 +104,9 @@ class StoryItem {
                   fontSize: 18,
                 ),
             supportedTypes: supportedTypes,
+            onMentionClicked: onMentionClicked,
+            onEmailClicked: onEmailClicked,
+            onPhoneClicked: onPhoneClicked,
           ),
         ),
         //color: backgroundColor,
