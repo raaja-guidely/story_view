@@ -42,6 +42,7 @@ class Home extends StatelessWidget {
                         "Hello world!\nHave a look at some great Ghanaian delicacies. I'm sorry if your mouth waters. \n\nTap!",
                     backgroundColor: Colors.orange,
                     roundedTop: true,
+                    supportedTypes: [],
                   ),
                   // StoryItem.inlineImage(
                   //   NetworkImage(
@@ -156,10 +157,12 @@ class _MoreStoriesState extends State<MoreStories> {
           StoryItem.text(
             title: "I guess you'd love to see more of our food. That's great.",
             backgroundColor: Colors.blue,
+            supportedTypes: [],
           ),
           StoryItem.text(
             title: "Nice!\n\nTap to continue.",
             backgroundColor: Colors.red,
+            supportedTypes: [],
             textStyle: TextStyle(
               fontFamily: 'Dancing',
               fontSize: 40,

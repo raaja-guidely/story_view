@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
+import 'package:rich_text_view/rich_text_view.dart';
 import 'package:story_view/widgets/story_video_youtube.dart';
 
 import '../controller/story_controller.dart';
@@ -52,6 +53,7 @@ class StoryItem {
   static StoryItem text({
     required String title,
     required Color backgroundColor,
+    required List<ParserType> supportedTypes,
     Key? key,
     TextStyle? textStyle,
     bool shown = false,
@@ -84,8 +86,13 @@ class StoryItem {
           vertical: 16,
         ),
         child: Center(
-          child: Text(
-            title,
+          child: RichTextView(
+            text: title,
+            maxLines: 3,
+            truncate: true,
+            viewLessText: 'less',
+            linkStyle: TextStyle(color: Colors.blue),
+            textAlign: TextAlign.center,
             style: textStyle?.copyWith(
                   color: contrast > 1.8 ? Colors.white : Colors.black,
                 ) ??
@@ -93,7 +100,7 @@ class StoryItem {
                   color: contrast > 1.8 ? Colors.white : Colors.black,
                   fontSize: 18,
                 ),
-            textAlign: TextAlign.center,
+            supportedTypes: supportedTypes,
           ),
         ),
         //color: backgroundColor,
