@@ -63,6 +63,7 @@ class StoryItem {
     void Function(String)? onMentionClicked,
     void Function(String)? onEmailClicked,
     void Function(String)? onPhoneClicked,
+    void Function(String)? onUrlClicked,
   }) {
     double contrast = ContrastHelper.contrast([
       backgroundColor.red,
@@ -107,6 +108,7 @@ class StoryItem {
             onMentionClicked: onMentionClicked,
             onEmailClicked: onEmailClicked,
             onPhoneClicked: onPhoneClicked,
+            onUrlClicked: onUrlClicked,
           ),
         ),
         //color: backgroundColor,
