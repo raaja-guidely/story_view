@@ -53,17 +53,12 @@ class StoryItem {
   static StoryItem text({
     required String title,
     required Color backgroundColor,
-    required List<ParsedType> supportedTypes,
     Key? key,
     TextStyle? textStyle,
     bool shown = false,
     bool roundedTop = false,
     bool roundedBottom = false,
     Duration? duration,
-    void Function(String)? onMentionClicked,
-    void Function(String)? onEmailClicked,
-    void Function(String)? onPhoneClicked,
-    void Function(String)? onUrlClicked,
   }) {
     double contrast = ContrastHelper.contrast([
       backgroundColor.red,
@@ -77,42 +72,33 @@ class StoryItem {
 
     return StoryItem(
       Container(
-        key: key,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(roundedTop ? 8 : 0),
-            bottom: Radius.circular(roundedBottom ? 8 : 0),
+          key: key,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(roundedTop ? 8 : 0),
+              bottom: Radius.circular(roundedBottom ? 8 : 0),
+            ),
           ),
-        ),
-        padding: EdgeInsets.symmetric(
-          horizontal: 24,
-          vertical: 16,
-        ),
-        child: Center(
-          child: RichTextView(
-            text: title,
-            maxLines: 3,
-            truncate: true,
-            viewLessText: 'less',
-            linkStyle: TextStyle(color: Colors.blue),
-            textAlign: TextAlign.center,
-            style: textStyle?.copyWith(
-                  color: contrast > 1.8 ? Colors.white : Colors.black,
-                ) ??
-                TextStyle(
-                  color: contrast > 1.8 ? Colors.white : Colors.black,
-                  fontSize: 18,
-                ),
-            supportedTypes: supportedTypes,
-            onMentionClicked: onMentionClicked,
-            onEmailClicked: onEmailClicked,
-            onPhoneClicked: onPhoneClicked,
-            onUrlClicked: onUrlClicked,
+          padding: EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 16,
           ),
-        ),
-        //color: backgroundColor,
-      ),
+          child: Center(
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: textStyle?.copyWith(
+                    color: contrast > 1.8 ? Colors.white : Colors.black,
+                  ) ??
+                  TextStyle(
+                    color: contrast > 1.8 ? Colors.white : Colors.black,
+                    fontSize: 18,
+                  ),
+            ),
+          )
+          //color: backgroundColor,
+          ),
       shown: shown,
       duration: duration ?? Duration(seconds: 3),
     );
@@ -248,7 +234,8 @@ class StoryItem {
           color: Colors.black,
           child: Stack(
             children: <Widget>[
-              url.contains('https://www.youtube.com')
+              (url.contains('https://www.youtube.com') ||
+                      url.contains('https://youtu.be/'))
                   ? StoryVideoYoutube.url(
                       url,
                       controller: controller,
@@ -460,10 +447,10 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
     return widget.storyItems.firstWhereOrNull((it) => !it!.shown);
   }
 
-  Widget get _currentView {
+  StoryItem get _currentView {
     var item = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
     item ??= widget.storyItems.last;
-    return item?.view ?? Container();
+    return item!;
   }
 
   @override
@@ -642,7 +629,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
       color: Colors.white,
       child: Stack(
         children: <Widget>[
-          _currentView,
+          _currentView.view,
           Visibility(
             visible: widget.progressPosition != ProgressPosition.none,
             child: Align(
@@ -676,6 +663,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
               alignment: Alignment.centerRight,
               heightFactor: 1,
               child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
                 onTapDown: (details) {
                   widget.controller.pause();
                 },
@@ -727,7 +715,6 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
               )),
           Align(
             alignment: Alignment.centerLeft,
-            heightFactor: 1,
             child: SizedBox(
                 child: GestureDetector(onTap: () {
                   widget.controller.previous();
