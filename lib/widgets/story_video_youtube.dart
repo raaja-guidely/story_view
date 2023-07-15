@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -68,7 +67,6 @@ class StoryVideoYoutubeState extends State<StoryVideoYoutube> {
       if (widget.videoLoader.state == LoadState.success) {
         this.playerController = YoutubePlayerController(
             initialVideoId: widget.videoLoader.videoId!);
-        log(this.playerController.value.isPlaying.toString());
         widget.storyController!.play();
         if (widget.storyController != null) {
           _streamSubscription =
@@ -119,7 +117,6 @@ class StoryVideoYoutubeState extends State<StoryVideoYoutube> {
 
   @override
   Widget build(BuildContext context) {
-    log((widget.videoLoader.state == LoadState.success).toString());
     return Container(
       color: Colors.black,
       height: double.infinity,

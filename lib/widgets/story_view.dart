@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:rich_text_view/rich_text_view.dart';
 import 'package:story_view/widgets/story_video_youtube.dart';
 
 import '../controller/story_controller.dart';
@@ -234,8 +233,7 @@ class StoryItem {
           color: Colors.black,
           child: Stack(
             children: <Widget>[
-              (url.contains('https://www.youtube.com') ||
-                      url.contains('https://youtu.be/'))
+              url.contains('youtube') || url.contains('youtu.be')
                   ? StoryVideoYoutube.url(
                       url,
                       controller: controller,
