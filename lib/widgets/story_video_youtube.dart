@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -21,7 +22,6 @@ class VideoLoader {
       onComplete();
     }
     final fileStream = YoutubePlayer.convertUrlToId(url)!;
-    print(fileStream);
     this.state = LoadState.success;
     this.videoId = fileStream;
     onComplete();
@@ -66,8 +66,9 @@ class StoryVideoYoutubeState extends State<StoryVideoYoutube> {
     widget.videoLoader.loadVideo(() {
       if (widget.videoLoader.state == LoadState.success) {
         this.playerController = YoutubePlayerController(
-            initialVideoId: widget.videoLoader.videoId!);
-        widget.storyController!.play();
+          initialVideoId: widget.videoLoader.videoId!,
+          flags: YoutubePlayerFlags(autoPlay: true),
+        )..addListener(listener);
         if (widget.storyController != null) {
           _streamSubscription =
               widget.storyController!.playbackNotifier.listen((playbackState) {
@@ -82,6 +83,14 @@ class StoryVideoYoutubeState extends State<StoryVideoYoutube> {
         setState(() {});
       }
     });
+  }
+
+  void listener() {
+    if (playerController.value.isReady && playerController.value.isPlaying) {
+      setState(() {});
+      widget.storyController!.play();
+      log('Video inició la reproducción');
+    }
   }
 
   @override
