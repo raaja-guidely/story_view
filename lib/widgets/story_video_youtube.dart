@@ -52,16 +52,30 @@ class StoryVideoYoutube extends StatefulWidget {
   }
 }
 
-class StoryVideoYoutubeState extends State<StoryVideoYoutube> {
+class StoryVideoYoutubeState extends State<StoryVideoYoutube>
+    with WidgetsBindingObserver {
   Future<void>? playerLoader;
 
   StreamSubscription? _streamSubscription;
 
   late YoutubePlayerController playerController;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      widget.storyController!.pause();
+      playerController.pause();
+      playerController.removeListener(listener);
+    } else if (state == AppLifecycleState.resumed) {
+      widget.storyController!.play();
+      playerController.play();
+      playerController.addListener(listener);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+     WidgetsBinding.instance.addObserver(this);
     widget.storyController!.pause();
     widget.videoLoader.loadVideo(() {
       if (widget.videoLoader.state == LoadState.success) {
@@ -79,15 +93,12 @@ class StoryVideoYoutubeState extends State<StoryVideoYoutube> {
             }
           });
         }
-      } else {
-        setState(() {});
-      }
+      } else {}
     });
   }
 
   void listener() {
     if (playerController.value.isReady && playerController.value.isPlaying) {
-      setState(() {});
       widget.storyController!.play();
       log('Video inició la reproducción');
     }
@@ -137,6 +148,8 @@ class StoryVideoYoutubeState extends State<StoryVideoYoutube> {
   @override
   void dispose() {
     playerController.dispose();
+    playerController.removeListener(listener);
+     WidgetsBinding.instance.removeObserver(this);
     _streamSubscription?.cancel();
     super.dispose();
   }
