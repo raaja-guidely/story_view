@@ -125,7 +125,7 @@ class StoryImageState extends State<StoryImage> {
   void initState() {
     super.initState();
     widget.controller!.onChangeType(TypeStory.image);
-    region = Offset.zero & Size(256.0, 170.0);
+    region = Offset.zero & Size(400, 250);
     if (widget.controller != null) {
       this._streamSubscription =
           widget.controller!.playbackNotifier.listen((playbackState) {
@@ -244,8 +244,8 @@ class StoryImageState extends State<StoryImage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomCenter,
           colors: [
-            paletteGenerator?.lightVibrantColor?.color ?? Colors.white,
-            paletteGenerator?.lightMutedColor?.color ?? Colors.white,
+            paletteGenerator?.lightVibrantColor?.color ?? Colors.black,
+            paletteGenerator?.lightMutedColor?.color ?? Colors.black,
           ],
         ),
       ),
