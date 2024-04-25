@@ -87,6 +87,7 @@ class StoryVideoState extends State<StoryVideo> {
         });
 
         if (widget.storyController != null) {
+            widget.storyController!.onChangeType(TypeStory.image);
           _streamSubscription =
               widget.storyController!.playbackNotifier.listen((playbackState) {
             if (playbackState == PlaybackState.pause) {
@@ -105,15 +106,24 @@ class StoryVideoState extends State<StoryVideo> {
   Widget getContentView() {
     if (widget.videoLoader.state == LoadState.success &&
         playerController!.value.isInitialized) {
-      return Center(
-        child: AspectRatio(
-          aspectRatio: playerController!.value.aspectRatio,
-          child: VideoPlayer(playerController!),
-        ),
+      return Stack(
+        children: [
+          SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(
+                width: playerController!.value.size.width,
+                height: playerController!.value.size.height,
+                child: VideoPlayer(playerController!),
+              ),
+            ),
+          )
+        ],
       );
     }
 
-    return widget.videoLoader.state == LoadState.loading || widget.videoLoader.state == LoadState.success
+    return widget.videoLoader.state == LoadState.loading ||
+            widget.videoLoader.state == LoadState.success
         ? Center(
             child: Container(
               width: 70,

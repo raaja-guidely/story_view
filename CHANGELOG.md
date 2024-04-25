@@ -1,3 +1,6 @@
+## [0.14.0] - 25 April 2024
+- Pallete generator
+
 ## [0.14.0] - 17 October 2021
 - Ability to hide progress indicators
 

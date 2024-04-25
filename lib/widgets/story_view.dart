@@ -165,45 +165,58 @@ class StoryItem {
   /// one passed to the `StoryView`
   factory StoryItem.inlineImage({
     required String url,
-    Text? caption,
+    String? caption,
     required StoryController controller,
     Key? key,
-    BoxFit imageFit = BoxFit.cover,
+    VoidCallback? onClick,
+    BoxFit imageFit = BoxFit.contain,
     Map<String, dynamic>? requestHeaders,
     bool shown = false,
     bool roundedTop = true,
     bool roundedBottom = false,
     Duration? duration,
   }) {
+ 
     return StoryItem(
       ClipRRect(
         key: key,
-        child: Container(
-          color: Colors.grey[100],
-          child: Container(
-            color: Colors.black,
-            child: Stack(
-              children: <Widget>[
-                StoryImage.url(
-                  url,
-                  controller: controller,
-                  fit: imageFit,
-                  requestHeaders: requestHeaders,
-                ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 16),
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Container(
-                      child: caption == null ? SizedBox() : caption,
-                      width: double.infinity,
-                    ),
-                  ),
-                ),
-              ],
+        child: Stack(
+          children: <Widget>[
+            Center(
+              child: StoryImage.url(
+                url,
+                controller: controller,
+                fit: imageFit,
+                requestHeaders: requestHeaders,
+              ),
             ),
-          ),
+            SafeArea(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.only(
+                    bottom: 24,
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 8,
+                  ),
+                  color: caption != null ? Colors.black54 : Colors.transparent,
+                  child: caption != null
+                      ? Text(
+                          caption,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        )
+                      : SizedBox(),
+                ),
+              ),
+            ),
+          ],
         ),
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(roundedTop ? 8 : 0),
@@ -718,6 +731,21 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                   widget.controller.previous();
                 }),
                 width: 70),
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              child: GestureDetector(
+                onTap: () {
+                  if (widget.controller.onPressed != null) {
+                    widget.controller.onPressed!();
+                  }
+                },
+              ),
+              width: 170,
+              height: 170,
+              color: Colors.transparent,
+            ),
           ),
         ],
       ),

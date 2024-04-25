@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 import '../utils.dart';
 import '../controller/story_controller.dart';
@@ -32,7 +33,7 @@ class ImageLoader {
         headers: this.requestHeaders as Map<String, String>?);
 
     fileStream.listen(
-      (fileResponse) async{
+      (fileResponse) async {
         if (!(fileResponse is FileInfo)) return;
         // the reason for this is that, when the cache manager fetches
         // the image again from network, the provided `onComplete` should
@@ -43,11 +44,14 @@ class ImageLoader {
 
         final imageBytes = fileResponse.file;
 
-      final inmutableBuffer =await   ui.ImmutableBuffer.fromFilePath(imageBytes.path);
+        final inmutableBuffer =
+            await ui.ImmutableBuffer.fromFilePath(imageBytes.path);
 
         this.state = LoadState.success;
 
-        PaintingBinding.instance.instantiateImageCodecWithSize(inmutableBuffer).then((codec) {
+        PaintingBinding.instance
+            .instantiateImageCodecWithSize(inmutableBuffer)
+            .then((codec) {
           this.frames = codec;
           onComplete();
         }, onError: (error) {
@@ -72,12 +76,16 @@ class StoryImage extends StatefulWidget {
   final BoxFit? fit;
 
   final StoryController? controller;
+  final String url;
+  final Function()? onClick;
 
   StoryImage(
     this.imageLoader, {
     Key? key,
     this.controller,
     this.fit,
+    required this.url,
+    this.onClick,
   }) : super(key: key ?? UniqueKey());
 
   /// Use this shorthand to fetch images/gifs from the provided [url]
@@ -95,6 +103,7 @@ class StoryImage extends StatefulWidget {
         ),
         controller: controller,
         fit: fit,
+        url: url,
         key: key);
   }
 
@@ -103,6 +112,9 @@ class StoryImage extends StatefulWidget {
 }
 
 class StoryImageState extends State<StoryImage> {
+  late Rect region;
+  PaletteGenerator? paletteGenerator;
+
   ui.Image? currentFrame;
 
   Timer? _timer;
@@ -112,7 +124,8 @@ class StoryImageState extends State<StoryImage> {
   @override
   void initState() {
     super.initState();
-
+    widget.controller!.onChangeType(TypeStory.image);
+    region = Offset.zero & Size(256.0, 170.0);
     if (widget.controller != null) {
       this._streamSubscription =
           widget.controller!.playbackNotifier.listen((playbackState) {
@@ -120,6 +133,7 @@ class StoryImageState extends State<StoryImage> {
         if (widget.imageLoader.frames == null) {
           return;
         }
+     
 
         if (playbackState == PlaybackState.pause) {
           this._timer?.cancel();
@@ -171,11 +185,23 @@ class StoryImageState extends State<StoryImage> {
     final nextFrame = await widget.imageLoader.frames!.getNextFrame();
 
     this.currentFrame = nextFrame.image;
-
+    _updatePaletteGenerator(region);
     if (nextFrame.duration > Duration(milliseconds: 0)) {
       this._timer = Timer(nextFrame.duration, forward);
     }
 
+    setState(() {});
+  }
+
+  Future<void> _updatePaletteGenerator(Rect newRegion) async {
+    paletteGenerator = await PaletteGenerator.fromImage(
+      RawImage(
+        image: this.currentFrame,
+        fit: widget.fit,
+      ).image!,
+      region: newRegion,
+      maximumColorCount: 20,
+    );
     setState(() {});
   }
 
@@ -213,6 +239,16 @@ class StoryImageState extends State<StoryImage> {
     return Container(
       width: double.infinity,
       height: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomCenter,
+          colors: [
+            paletteGenerator?.lightVibrantColor?.color ?? Colors.white,
+            paletteGenerator?.lightMutedColor?.color ?? Colors.white,
+          ],
+        ),
+      ),
       child: getContentView(),
     );
   }
