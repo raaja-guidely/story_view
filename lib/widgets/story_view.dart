@@ -582,10 +582,10 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
 
   void _onClick() {
     if (widget.onClick != null) {
-      final storyItem = widget.storyItems.firstWhere((it) {
-        return !it!.shown;
-      })!;
-      widget.onClick!(storyItem);
+      final firstPage = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
+      final index = widget.storyItems.indexOf(firstPage);
+      widget.controller.pause();
+      widget.onClick!(widget.storyItems[index]!);
     }
   }
 
