@@ -399,7 +399,7 @@ class StoryView extends StatefulWidget {
   /// Callback for when a full cycle of story is shown. This will be called
   /// each time the full story completes when [repeat] is set to `true`.
   final VoidCallback? onComplete;
-  final void Function(int)? onClick;
+  final ValueChanged<StoryItem>? onClick;
 
   /// Callback for when a vertical swipe gesture is detected. If you do not
   /// want to listen to such event, do not provide it. For instance,
@@ -582,10 +582,11 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
 
   void _onClick() {
     if (widget.onClick != null) {
-      final firstPage = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
-      final index = widget.storyItems.indexOf(firstPage);
+       final storyItem = widget.storyItems.firstWhere((it) {
+      return !it!.shown;
+    })!;
       widget.controller.pause();
-      widget.onClick!(index);
+      widget.onClick!(storyItem);
     }
 
     if (widget.repeat) {
