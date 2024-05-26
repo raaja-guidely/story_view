@@ -176,7 +176,6 @@ class StoryItem {
     bool roundedBottom = false,
     Duration? duration,
   }) {
- 
     return StoryItem(
       ClipRRect(
         key: key,
@@ -400,6 +399,7 @@ class StoryView extends StatefulWidget {
   /// Callback for when a full cycle of story is shown. This will be called
   /// each time the full story completes when [repeat] is set to `true`.
   final VoidCallback? onComplete;
+  final VoidCallback? onClick;
 
   /// Callback for when a vertical swipe gesture is detected. If you do not
   /// want to listen to such event, do not provide it. For instance,
@@ -437,6 +437,7 @@ class StoryView extends StatefulWidget {
     this.inline = false,
     this.onVerticalSwipeComplete,
     this.indicatorColor = Colors.white,
+    this.onClick,
   });
 
   @override
@@ -568,6 +569,21 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
     if (widget.onComplete != null) {
       widget.controller.pause();
       widget.onComplete!();
+    }
+
+    if (widget.repeat) {
+      widget.storyItems.forEach((it) {
+        it!.shown = false;
+      });
+
+      _beginPlay();
+    }
+  }
+
+  void _onClick() {
+    if (widget.onClick != null) {
+      widget.controller.pause();
+      widget.onClick!();
     }
 
     if (widget.repeat) {
@@ -736,11 +752,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
             alignment: Alignment.center,
             child: Container(
               child: GestureDetector(
-                onTap: () {
-                  if (widget.controller.onPressed != null) {
-                    widget.controller.onPressed!();
-                  }
-                },
+                onTap: _onClick,
               ),
               width: 170,
               height: 170,
